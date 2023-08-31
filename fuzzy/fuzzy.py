@@ -1,68 +1,86 @@
 import numpy as np
 import sys
-import enum
+from enum import Enum
 import matplotlib.pyplot as plt
 import meteorologia as met
 sys.path.append('scikit-fuzzy-master')
 import skfuzzy as fuzz
 from skfuzzy import control as ctrl
 
-
-#Algoritmo de Fuzzy que baseado nos dados de uma API, aplica a logicas as seguintes situações:
-
-#Decisões de Vestuário: Com base na temperatura, umidade e outros fatores climáticos, 
-# responder: "Que tipo de roupas devo usar hoje?", sugerindo opções de vestuário.
-
-#Atividades Externas: Dependendo da temperatura, velocidade do vento e outras métricas, 
-# responder: "O CLima esta bom para eu realizar alguma atividade ao ar livre?", dizendo se o clima esta bom ou não, informando-o
-
-#Previsão de Chuva: Usando métricas como intensidade de chuva, probabilidade de precipitação 
-# e cobertura de nuvens, responder a pergunta: "A Previsão de chuva é?/Devo levar um guarda-chuva?", respondendo
-# se vai chover ou não, e se deve levar um guarda-chuva.
-
-#Avaliação de Conforto: Com base em dados como temperatura, umidade e sensação térmica, 
-# responder: "O que posso usar para tornar o clima mais agradavel?", sugerindo opções do que fazer.
-
-#Eficiência Energética: Com base nas informações sobre a temperatura, juntamente com a velocidade do vento, 
-#   responder: "A refrigeração interna, deve ser como?", sugerindo opções de refrigeração.
-
-#Segurança Viária: Usando dados de visibilidade, velocidade do vento e condições climáticas, 
-# responder: "Como esta o clima para eu sair?", dizendo se o clima esta bom ou não, 
-# informando-o junto de cuidados a serem tomados.
-
-#Atividades Agrícolas: Com Base nas informações climaticas, responder: 
-# "Como está o clima para realizar atividades agricolas?", dizendo o que esta bom para ser plantado,
-# e o que não esta bom para ser plantado.
-
-#baseado no escolhido pelo usuário.
-
-class NumEscolhas(enum):
-    Vestuario = 1
-    AtividadesExternas = 2
-    PrevisaoChuva = 3
-    AvaliacaoConforto = 4
-    EficienciaEnergetica = 5
-    SegurancaViaria = 6
-    AtividadesAgricolas = 7
+class NumEscolhas(Enum):
+    VESTUARIO= 1
+    ATIVIDADES_EXTERNAS = 2
+    PREVISAO_CHUVA = 3
+    AVALIACAO_DE_CONFORTO = 4
+    EFICIENCIA_ENERGETICA = 5
+    SEGURANCA_VIARIA = 6
+    ATIVIDADES_AGRICOLAS = 7
 
 # Cria as variáveis do problema
 class FuzzyBase:
-    def __init__(self, cidade: str, interesse: NumEscolhas = None):
-        self.set_cidade(cidade)
-        self.set_interesse(interesse)
-        self.criar_entradas()
-        self.criar_saidas()
-        self.mapear()
+    def __init__(self, cidade: str):
+        self.tempo = cidade
 
-    def set_cidade(self, cidade: str):
+    @property
+    def tempo(self):
+        return self.__tempo
+    
+    @tempo.setter
+    def tempo(self, cidade: str):
         if cidade is not None:
-            self.tempo = met.Tempo(cidade)
-            self.tempo.consultar()
+            self.__tempo = met.Tempo(cidade)
+            self.__tempo
+            self.__criar_controlador().__preencher_entradas()
+        return self
 
-    def set_interesse(self, interesse: NumEscolhas):
-        self.interesse = interesse
+    @tempo.getter
+    def tempo(self):
+        return self.__tempo
 
-    def criar_entradas(self):
+    def __get_opcao(self, opcao: NumEscolhas, opcao1, opcao2, opcao3, opcao4, opcao5, opcao6, opcao7):
+        match opcao:
+            case NumEscolhas.VESTUARIO:
+                opcao1()
+            case NumEscolhas.ATIVIDADES_EXTERNAS:
+                opcao2()
+            case NumEscolhas.PREVISAO_CHUVA:
+                opcao3()
+            case NumEscolhas.AVALIACAO_DE_CONFORTO:
+                opcao4()
+            case NumEscolhas.EFICIENCIA_ENERGETICA:
+                opcao5()
+            case NumEscolhas.SEGURANCA_VIARIA:
+                opcao6()
+            case NumEscolhas.ATIVIDADES_AGRICOLAS:
+                opcao7()
+            case _:
+                return None
+
+    def resposta(self, opcao: NumEscolhas):
+        self.__get_opcao(opcao, self.__computar_vestuario, self.__computar_atividades_externas,
+                         self.__computar_previsao_chuva, self.__computar_avaliacao_conforto,
+                         self.__computar_eficiencia_energetica, self.__computar_seguranca_viaria,
+                         self.__computar_atividades_agricolas)
+        return self
+
+    def grafico(self, opcao: NumEscolhas):
+        self.__get_opcao(opcao, self.__grafico_vestuario, self.__grafico_atividades_externas,
+                         self.__grafico_previsao_chuva, self.__grafico_avaliacao_conforto,
+                         self.__grafico_eficiencia_energetica, self.__grafico_seguranca_viaria,
+                         self.__grafico_atividades_agricolas)
+        return self   
+       
+    def __preencher_entradas(self):
+        self.__alimentar_controlador_atividades_agricolas(  
+        ).__alimentar_controlador_atividades_externas(            
+        ).__alimentar_controlador_avaliacao_conforto(
+        ).__alimentar_controlador_eficiencia_energetica(
+        ).__alimentar_controlador_previsao_chuva(
+        ).__alimentar_controlador_seguranca_viaria(
+        ).__alimentar_controlador_vestuario()
+        return self
+
+    def __criar_entradas(self):
         self.nublado = ctrl.Antecedent(np.arange(0, 101, 0.1), 'nublado')
         self.temperatura = ctrl.Antecedent(np.arange(-20, 51, 0.1), 'temperatura')
         self.umidade = ctrl.Antecedent(np.arange(0, 101, 0.1), 'umidade')
@@ -76,8 +94,9 @@ class FuzzyBase:
         self.direcao_vento = ctrl.Antecedent(np.arange(0, 361, 0.1), 'direcao_vento')
         self.rajada_vento = ctrl.Antecedent(np.arange(0, 101, 0.1), 'rajada_vento')
         self.velocidade_vento = ctrl.Antecedent(np.arange(0, 101, 0.1), 'velocidade_vento')
-
-    def mapear(self):
+        return self
+    
+    def __mapear_entradas(self):
         self.nublado.automf(names=['ensolarado', 'parcialmente_nublado', 'nublado', 'muito_nublado'])   
         self.temperatura.automf(names=['muito_frio', 'frio', 'fresco', 'agradavel', 'quente', 'muito_quente'])
         self.umidade.automf(names=['muito_seco', 'seco', 'agradavel', 'umido', 'muito_umido'])
@@ -90,8 +109,9 @@ class FuzzyBase:
         self.condicoes_climaticas.automf(names=['muito_ruim', 'ruim', 'media', 'boa', 'muito_boa'])
         self.velocidade_vento.automf(names=['muito_fraco', 'fraco', 'moderado', 'forte', 'muito_forte'])
         self.rajada_vento.automf(names=['muito_fraco', 'fraco', 'moderado', 'forte', 'muito_forte']) 
-
-    def criar_saidas(self):
+        return self
+    
+    def __criar_saidas(self):
         self.vestuario = ctrl.Consequent(np.arange(0, 101, 0.1), 'vestuario')
         self.atividades_externas = ctrl.Consequent(np.arange(0, 101, 0.1), 'atividades_externas')
         self.previsao_chuva = ctrl.Consequent(np.arange(0, 101, 0.1), 'previsao_chuva')
@@ -99,8 +119,9 @@ class FuzzyBase:
         self.eficiencia_energetica = ctrl.Consequent(np.arange(0, 101, 0.1), 'eficiencia_energetica')
         self.seguranca_viaria = ctrl.Consequent(np.arange(0, 101, 0.1), 'seguranca_viaria')
         self.atividades_agricolas = ctrl.Consequent(np.arange(0, 101, 0.1), 'atividades_agricolas')
-
-    def mapear_saidas(self):
+        return self
+    
+    def __mapear_saidas(self):
         self.vestuario.automf(names=['muito_frio', 'frio', 'fresco', 'agradavel', 'quente', 'muito_quente'])
         self.atividades_externas.automf(names=['muito_frio', 'frio', 'fresco', 'agradavel', 'quente', 'muito_quente'])
         self.previsao_chuva.automf(names=['esta_chovendo', 'vai_chover', 'talvez_chova', 'nao_vai_chover'])
@@ -108,84 +129,104 @@ class FuzzyBase:
         self.eficiencia_energetica.automf(names=['muito_quente', 'quente', 'fresco', 'frio', 'muito_frio'])
         self.seguranca_viaria.automf(names=['muito_ruim', 'ruim', 'media', 'boa', 'muito_boa'])
         self.atividades_agricolas.automf(names=['muito_ruim', 'ruim', 'media', 'boa', 'muito_boa'])
-
+        return self
+    
     def visualizar_nublado(self):
         self.nublado.view()
         plt.show()
-
+        return self
+    
     def visualizar_temperatura(self):
         self.temperatura.view()
         plt.show()
-
+        return self
+    
     def visualizar_umidade(self):
         self.umidade.view()
         plt.show()
-
+        return self
+    
     def visualizar_precipitacao(self):
         self.precipitacao.view()
         plt.show()
-
+        return self
+    
     def visualizar_intensidade_chuva(self):
         self.intensidade_chuva.view()
         plt.show()
-
+        return self
+    
     def visualizar_intensidade_neve(self):
         self.intensidade_neve.view()
         plt.show()
-
+        return self
+      
     def visualizar_temperatura_aparente(self):
         self.temperatura_aparente.view()
         plt.show()
-
+        return self
+    
     def visualizar_intensidade_uv(self):
         self.intensidade_uv.view()
         plt.show()
-
+        return self
+    
     def visualizar_visibilidade(self):
         self.visibilidade.view()
         plt.show()
-
+        return self
+    
     def visualizar_condicoes_climaticas(self):
         self.condicoes_climaticas.view()
         plt.show()
-
+        return self
+    
     def visualizar_velocidade_vento(self):
         self.velocidade_vento.view()
         plt.show()
-
+        return self
+    
     def visualizar_rajada_vento(self):
         self.rajada_vento.view()
         plt.show()
-
+        return self
+    
     def visualizar_vestuario(self):
         self.vestuario.view()
         plt.show()
-
+        return self
+    
     def visualizar_atividades_externas(self):
         self.atividades_externas.view()
         plt.show()
-
+        return self
+     
     def visualizar_previsao_chuva(self):
         self.previsao_chuva.view()
         plt.show()
-
+        return self
+    
     def visualizar_avaliacao_conforto(self):
         self.avaliacao_conforto.view()
         plt.show()
-
+        return self
+    
     def visualizar_eficiencia_energetica(self):
         self.eficiencia_energetica.view()
         plt.show()
-
+        return self
+    
     def visualizar_seguranca_viaria(self):
         self.seguranca_viaria.view()
         plt.show()
-
+        return self
+    
     def visualizar_atividades_agricolas(self):
         self.atividades_agricolas.view()
         plt.show()
-
-    def criar_regras_vestuario(self):
+        return self
+    
+    def __criar_regras_vestuario(self):
         rule_muito_quente = ctrl.Rule(
             (self.temperatura['muito_quente'] | self.temperatura_aparente['muito_quente']) |
             (self.temperatura['quente'] & 
@@ -196,7 +237,7 @@ class FuzzyBase:
                     self.umidade['seco']) | self.intensidade_neve['sem_neve'] |
                     (self.velocidade_vento['muito_fraco'] | self.velocidade_vento['fraco'] | 
                     self.velocidade_vento['moderado']))), self.vestuario['muito_quente'])
-
+        
         rule_quente = ctrl.Rule(
             (self.temperatura['quente'] | self.temperatura_aparente['quente']) |
             (self.temperatura['agradavel'] & (
@@ -238,7 +279,7 @@ class FuzzyBase:
         return ctrl.ControlSystem([rule_muito_quente, rule_quente, rule_agradavel, 
                                    rule_fresco, rule_frio, rule_muito_frio])
 
-    def criar_regras_atividades_externas(self):
+    def __criar_regras_atividades_externas(self):
         rule_muito_frio_ext= ctrl.Rule(
             (self.temperatura['muito_frio'] | self.temperatura_aparente['muito_frio']) |
             (self.temperatura['frio'] & self.umidade['muito_umido']) |
@@ -277,7 +318,7 @@ class FuzzyBase:
         return ctrl.ControlSystem([rule_muito_frio_ext, rule_frio_ext, rule_agradavel_ext, 
                                    rule_quente_ext, rule_muito_quente_ext])
     
-    def criar_regras_previsao_chuva(self):
+    def __criar_regras_previsao_chuva(self):
         rule_esta_chovendo = ctrl.Rule(
             (self.precipitacao['chuva_moderada'] | self.precipitacao['chuva_forte'] | 
              self.precipitacao['chuva_muito_forte']) | 
@@ -304,7 +345,7 @@ class FuzzyBase:
 
         return ctrl.ControlSystem([rule_esta_chovendo, rule_vai_chover, rule_talvez_chova, rule_nao_vai_chover])
     
-    def criar_regras_avaliacao_conforto(self):
+    def __criar_regras_avaliacao_conforto(self):
         rule_muito_ruim = ctrl.Rule(
             (self.temperatura['muito_frio'] | self.temperatura['muito_quente']) &
             (self.intensidade_uv['extremo'] | 
@@ -346,7 +387,7 @@ class FuzzyBase:
         return ctrl.ControlSystem([rule_muito_ruim, rule_ruim, rule_media, 
                                    rule_boa, rule_muito_boa])
                 
-    def criar_regras_eficiencia_energetica(self):
+    def __criar_regras_eficiencia_energetica(self):
         rule_muito_quente = ctrl.Rule(
             (self.temperatura['muito_quente'] | self.temperatura_aparente['muito_quente']) &
             (self.umidade['muito_umido'] | self.intensidade_uv['extremo'] | self.condicoes_climaticas['muito_ruim']),
@@ -375,7 +416,7 @@ class FuzzyBase:
         
         return ctrl.ControlSystem([rule_muito_quente, rule_quente, rule_fresco, rule_frio, rule_muito_frio])
     
-    def criar_regras_seguranca_viaria(self):
+    def __criar_regras_seguranca_viaria(self):
         rule_muito_ruim = ctrl.Rule(
             (self.intensidade_chuva['chuva_muito_forte'] | self.intensidade_neve['neve_muito_forte']) | 
             (self.visibilidade['muito_ruim']) | 
@@ -413,7 +454,7 @@ class FuzzyBase:
 
         return ctrl.ControlSystem([rule_muito_ruim, rule_ruim, rule_media, rule_boa, rule_muito_boa])
     
-    def criar_regras_atividades_agricolas(self):
+    def __criar_regras_atividades_agricolas(self):
         rule_muito_ruim = ctrl.Rule(
             (self.intensidade_chuva['chuva_muito_forte']) | 
             (self.temperatura['muito_frio'] | self.temperatura['muito_quente']) |
@@ -455,48 +496,151 @@ class FuzzyBase:
 
         return ctrl.ControlSystem([rule_muito_ruim, rule_ruim, rule_media, rule_boa, rule_muito_boa])
     
-    def criar_controlador(self):
-        self.controlador_vestuario = ctrl.ControlSystemSimulation(self.criar_regras_vestuario())
-        self.controlador_atividades_externas = ctrl.ControlSystemSimulation(self.criar_regras_atividades_externas())
-        self.controlador_previsao_chuva = ctrl.ControlSystemSimulation(self.criar_regras_previsao_chuva())
-        self.controlador_avaliacao_conforto = ctrl.ControlSystemSimulation(self.criar_regras_avaliacao_conforto())
-        self.controlador_eficiencia_energetica = ctrl.ControlSystemSimulation(self.criar_regras_eficiencia_energetica())
-        self.controlador_seguranca_viaria = ctrl.ControlSystemSimulation(self.criar_regras_seguranca_viaria())
-        self.controlador_atividades_agricolas = ctrl.ControlSystemSimulation(self.criar_regras_atividades_agricolas())
+    def __criar_controlador(self):
+        self.__criar_entradas().__criar_saidas().__mapear_entradas().__mapear_saidas()
+        self.controlador_vestuario = ctrl.ControlSystemSimulation(self.__criar_regras_vestuario())
+        self.controlador_atividades_externas = ctrl.ControlSystemSimulation(self.__criar_regras_atividades_externas())
+        self.controlador_previsao_chuva = ctrl.ControlSystemSimulation(self.__criar_regras_previsao_chuva())
+        self.controlador_avaliacao_conforto = ctrl.ControlSystemSimulation(self.__criar_regras_avaliacao_conforto())
+        self.controlador_eficiencia_energetica = ctrl.ControlSystemSimulation(self.__criar_regras_eficiencia_energetica())
+        self.controlador_seguranca_viaria = ctrl.ControlSystemSimulation(self.__criar_regras_seguranca_viaria())
+        self.controlador_atividades_agricolas = ctrl.ControlSystemSimulation(self.__criar_regras_atividades_agricolas())
+        return self
+    
+    def __alimentar_controlador_vestuario(self):
+        self.controlador_vestuario.input['temperatura'] = self.__tempo.temperatura
+        self.controlador_vestuario.input['temperatura_aparente'] = self.__tempo.temperatura_aparente
+        self.controlador_vestuario.input['umidade'] = self.__tempo.umidade
+        self.controlador_vestuario.input['nublado'] = self.__tempo.nublado
+        self.controlador_vestuario.input['intensidade_chuva'] = self.__tempo.intensidade_chuva
+        self.controlador_vestuario.input['intensidade_neve'] = self.__tempo.intensidade_neve
+        self.controlador_vestuario.input['velocidade_vento'] = self.__tempo.velocidade_vento
+        self.controlador_vestuario.input['rajada_vento'] = self.__tempo.rajada_vento
+        return self
+    
+    def __alimentar_controlador_atividades_externas(self):
+        self.controlador_atividades_externas.input['temperatura'] = self.__tempo.temperatura
+        self.controlador_atividades_externas.input['temperatura_aparente'] = self.__tempo.temperatura_aparente
+        self.controlador_atividades_externas.input['umidade'] = self.__tempo.umidade
+        self.controlador_atividades_externas.input['nublado'] = self.__tempo.nublado
+        self.controlador_atividades_externas.input['intensidade_chuva'] = self.__tempo.intensidade_chuva
+        self.controlador_atividades_externas.input['intensidade_neve'] = self.__tempo.intensidade_neve
+        self.controlador_atividades_externas.input['velocidade_vento'] = self.__tempo.velocidade_vento
+        self.controlador_atividades_externas.input['rajada_vento'] = self.__tempo.rajada_vento
+        return self
+    
+    def __alimentar_controlador_previsao_chuva(self):
+        self.controlador_previsao_chuva.input['precipitacao'] = self.__tempo.precipitacao
+        self.controlador_previsao_chuva.input['umidade'] = self.__tempo.umidade
+        self.controlador_previsao_chuva.input['nublado'] = self.__tempo.nublado
+        self.controlador_previsao_chuva.input['condicoes_climaticas'] = self.__tempo.condicao
+        self.controlador_previsao_chuva.input['intensidade_chuva'] = self.__tempo.intensidade_chuva
+        self.controlador_previsao_chuva.input['intensidade_neve'] = self.__tempo.intensidade_neve
+        self.controlador_previsao_chuva.input['velocidade_vento'] = self.__tempo.velocidade_vento
+        self.controlador_previsao_chuva.input['rajada_vento'] = self.__tempo.rajada_vento
+        return self
+    
+    def __alimentar_controlador_avaliacao_conforto(self):
+        self.controlador_avaliacao_conforto.input['temperatura'] = self.__tempo.temperatura
+        self.controlador_avaliacao_conforto.input['temperatura_aparente'] = self.__tempo.temperatura_aparente
+        self.controlador_avaliacao_conforto.input['umidade'] = self.__tempo.umidade
+        self.controlador_avaliacao_conforto.input['nublado'] = self.__tempo.nublado
+        self.controlador_avaliacao_conforto.input['condicoes_climaticas'] = self.__tempo.condicao
+        self.controlador_avaliacao_conforto.input['intensidade_chuva'] = self.__tempo.intensidade_chuva
+        self.controlador_avaliacao_conforto.input['intensidade_neve'] = self.__tempo.intensidade_neve
+        self.controlador_avaliacao_conforto.input['intensidade_uv'] = self.__tempo.indice_uv
+        self.controlador_avaliacao_conforto.input['visibilidade'] = self.__tempo.visibilidade
+        self.controlador_avaliacao_conforto.input['velocidade_vento'] = self.__tempo.velocidade_vento
+        self.controlador_avaliacao_conforto.input['rajada_vento'] = self.__tempo.rajada_vento
+        return self
+    
+    def __alimentar_controlador_eficiencia_energetica(self):
+        self.controlador_eficiencia_energetica.input['temperatura'] = self.__tempo.temperatura
+        self.controlador_eficiencia_energetica.input['temperatura_aparente'] = self.__tempo.temperatura_aparente
+        self.controlador_eficiencia_energetica.input['umidade'] = self.__tempo.umidade
+        self.controlador_eficiencia_energetica.input['nublado'] = self.__tempo.nublado
+        self.controlador_eficiencia_energetica.input['condicoes_climaticas'] = self.__tempo.condicao
+        self.controlador_eficiencia_energetica.input['intensidade_chuva'] = self.__tempo.intensidade_chuva
+        self.controlador_eficiencia_energetica.input['intensidade_neve'] = self.__tempo.intensidade_neve
+        self.controlador_eficiencia_energetica.input['intensidade_uv'] = self.__tempo.indice_uv
+        self.controlador_eficiencia_energetica.input['visibilidade'] = self.__tempo.visibilidade
+        self.controlador_eficiencia_energetica.input['velocidade_vento'] = self.__tempo.velocidade_vento
+        self.controlador_eficiencia_energetica.input['rajada_vento'] = self.__tempo.rajada_vento
+        return self
+    
+    def __alimentar_controlador_seguranca_viaria(self):
+        self.controlador_seguranca_viaria.input['temperatura'] = self.__tempo.temperatura
+        self.controlador_seguranca_viaria.input['temperatura_aparente'] = self.__tempo.temperatura_aparente
+        self.controlador_seguranca_viaria.input['umidade'] = self.__tempo.umidade
+        self.controlador_seguranca_viaria.input['nublado'] = self.__tempo.nublado
+        self.controlador_seguranca_viaria.input['condicoes_climaticas'] = self.__tempo.condicao
+        self.controlador_seguranca_viaria.input['intensidade_chuva'] = self.__tempo.intensidade_chuva
+        self.controlador_seguranca_viaria.input['intensidade_neve'] = self.__tempo.intensidade_neve
+        self.controlador_seguranca_viaria.input['intensidade_uv'] = self.__tempo.indice_uv
+        self.controlador_seguranca_viaria.input['visibilidade'] = self.__tempo.visibilidade
+        self.controlador_seguranca_viaria.input['velocidade_vento'] = self.__tempo.velocidade_vento
+        self.controlador_seguranca_viaria.input['rajada_vento'] = self.__tempo.rajada_vento
+        return self
+    
+    def __alimentar_controlador_atividades_agricolas(self):
+        self.controlador_atividades_agricolas.input['temperatura'] = self.__tempo.temperatura
+        self.controlador_atividades_agricolas.input['temperatura_aparente'] = self.__tempo.temperatura_aparente
+        self.controlador_atividades_agricolas.input['umidade'] = self.__tempo.umidade
+        self.controlador_atividades_agricolas.input['nublado'] = self.__tempo.nublado
+        self.controlador_atividades_agricolas.input['condicoes_climaticas'] = self.__tempo.condicao
+        self.controlador_atividades_agricolas.input['intensidade_chuva'] = self.__tempo.intensidade_chuva
+        self.controlador_atividades_agricolas.input['intensidade_neve'] = self.__tempo.intensidade_neve
+        self.controlador_atividades_agricolas.input['intensidade_uv'] = self.__tempo.indice_uv
+        self.controlador_atividades_agricolas.input['visibilidade'] = self.__tempo.visibilidade
+        self.controlador_atividades_agricolas.input['velocidade_vento'] = self.__tempo.velocidade_vento
+        self.controlador_atividades_agricolas.input['rajada_vento'] = self.__tempo.rajada_vento
+        return self
+    
+    def __computar_vestuario(self):
+        self.controlador_vestuario.compute()
+        return self.controlador_vestuario.output['vestuario']
+    
+    def __computar_atividades_externas(self):
+        self.controlador_atividades_externas.compute()
+        return self.controlador_atividades_externas.output['atividades_externas']
+    
+    def __computar_previsao_chuva(self):
+        self.controlador_previsao_chuva.compute()
+        return self.controlador_previsao_chuva.output['previsao_chuva']
+    
+    def __computar_avaliacao_conforto(self):
+        self.controlador_avaliacao_conforto.compute()
+        return self.controlador_avaliacao_conforto.output['avaliacao_conforto']
+    
+    def __computar_eficiencia_energetica(self):
+        self.controlador_eficiencia_energetica.compute()
+        return self.controlador_eficiencia_energetica.output['eficiencia_energetica']
+    
+    def __computar_seguranca_viaria(self):
+        self.controlador_seguranca_viaria.compute()
+        return self.controlador_seguranca_viaria.output['seguranca_viaria']
+    
+    def __computar_atividades_agricolas(self):
+        self.controlador_atividades_agricolas.compute()
+        return self.controlador_atividades_agricolas.output['atividades_agricolas']
 
+    def __grafico_vestuario(self):
+        self.vestuario.view(sim=self.controlador_vestuario)
 
-gorjeta_ctrl = ctrl.ControlSystem([rule1, rule2, rule3])
-gorjeta_simulador = ctrl.ControlSystemSimulation(gorjeta_ctrl)
+    def __grafico_atividades_externas(self):
+        self.atividades_externas.view(sim=self.controlador_atividades_externas)
 
-# Lendo os valores que o usuário escolheu (ao lado)
-avaliacao_comida = 'pessima' 
-avaliacao_servico = 'ruim' 
+    def __grafico_previsao_chuva(self):
+        self.previsao_chuva.view(sim=self.controlador_previsao_chuva)
 
-# Convertendo os valores para números (crisp/nítido) usando
-# defuzificação (o tipo pode ser alterado pelo usuário)
-tipo_defuzz = 'mom'  
-comida_nitido=fuzz.defuzz(comida.universe,comida[avaliacao_comida].mf,tipo_defuzz)
-servico_nitido=fuzz.defuzz(servico.universe,servico[avaliacao_servico].mf,tipo_defuzz)
-print('comida nítido (crisp)',comida_nitido)
-print('serviço nítido (crisp)',servico_nitido)
+    def __grafico_avaliacao_conforto(self):
+        self.avaliacao_conforto.view(sim=self.controlador_avaliacao_conforto)
 
-# Colocando os valores de entrada (comida e serviço) no simulador
-gorjeta_simulador.input['comida'] = comida_nitido
-gorjeta_simulador.input['servico'] = servico_nitido
+    def __grafico_eficiencia_energetica(self):
+        self.eficiencia_energetica.view(sim=self.controlador_eficiencia_energetica)
 
-# Computando o resultado
-gorjeta_simulador.compute()
-valor_gorjeta=gorjeta_simulador.output['gorjeta']
+    def __grafico_seguranca_viaria(self):
+        self.seguranca_viaria.view(sim=self.controlador_seguranca_viaria)
 
-# Transformando o valor nítido/crisp do resultado em uma
-# palavra (um adjetivo)
-valores_por_adjetivo=[fuzz.interp_membership(gorjeta.universe,gorjeta['baixa'].mf,valor_gorjeta),
-         fuzz.interp_membership(gorjeta.universe,gorjeta['media'].mf,valor_gorjeta),
-         fuzz.interp_membership(gorjeta.universe,gorjeta['alta'].mf,valor_gorjeta)
-] 
-print(valores_por_adjetivo)        
-
-max_index = valores_por_adjetivo.index(max(valores_por_adjetivo))
-avaliacao_gorjeta=adjetivos_gorgeta[max_index]
-print('Valor sugerido para a gorjeta: ',valor_gorjeta)
-print('Trata-se de uma gorjeta ',avaliacao_gorjeta)
+    def __grafico_atividades_agricolas(self):
+        self.atividades_agricolas.view(sim=self.controlador_atividades_agricolas)
