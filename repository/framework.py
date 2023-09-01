@@ -1,11 +1,18 @@
-from tkinter import Tk, Button, Text, Entry, Menu, Event
+from tkinter import Tk, Button, Text, Entry, Menu, Event, Frame
 import tkinter as tk
 from tkinter.ttk import Treeview, Menubutton
 
 class TForm(Tk):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        
+    def __init__(self, titulo: str, largura: int, altura: int, redimensionavel: bool = False, 
+                 centralizado: bool = True, baseName: str | None = None, sync: bool = False, 
+                 use: bool = True, useTk: str | None = None):
+        super().__init__(baseName=baseName, screenName=titulo, sync=sync, use=use, useTk=useTk)
+        self.__altura = altura
+        self.__largura = largura
+        self.resizable(redimensionavel, redimensionavel)
+        if centralizado:
+            self.__centralize()
+
         # Evento create
         if hasattr(self, 'on_create'):
             self.on_create()
@@ -15,6 +22,15 @@ class TForm(Tk):
 
         # Evento key_press
         self.bind('<KeyPress>', self._on_key_press)
+
+    def __centralize(self):
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+
+        x = (screen_width - self.__largura) // 2
+        y = (screen_height - self.__altura) // 2
+
+        self.geometry(f"{self.__largura}x{self.__altura}+{x}+{y}")
 
     def _on_close(self):
         if hasattr(self, 'on_close'):
@@ -240,9 +256,6 @@ class TMenuButton(Menubutton):
         if callback and callable(callback):
             callback()
             
-import tkinter as tk
-from tkinter import Entry
-
 class TEntry(Entry):
     def __init__(self, master=None, callback_prefix='', **kwargs):
         self.callback_prefix = callback_prefix
@@ -280,9 +293,7 @@ class TEntry(Entry):
         if callback and callable(callback):
             callback()
 
-import tkinter as tk
-
-class LabeledEntry(tk.Frame):
+class TLabeledEntry(Frame):
     def __init__(self, master=None, label_position='above', label_text='', **kwargs):
         super().__init__(master, **kwargs)
         
@@ -337,35 +348,3 @@ class LabeledEntry(tk.Frame):
     def on_key(self, event):
         pass
 
-# Exemplo de uso
-class MyForm(tk.Tk):
-    def __init__(self):
-        super().__init__()
-
-        labeled_entry1 = LabeledEntry(self, label_position='above', label_text='Nome:')
-        labeled_entry1.pack()
-
-        labeled_entry2 = LabeledEntry(self, label_position='below', label_text='Idade:')
-        labeled_entry2.pack()
-
-        labeled_entry3 = LabeledEntry(self, label_position='left', label_text='Email:')
-        labeled_entry3.pack()
-
-        labeled_entry4 = LabeledEntry(self, label_position='right', label_text='Telefone:')
-        labeled_entry4.pack()
-
-        labeled_entry1.on_focus_in = self.entry_focus_in
-        labeled_entry1.on_focus_out = self.entry_focus_out
-        labeled_entry1.on_key = self.entry_key
-
-    def entry_focus_in(self, event):
-        print("Entry recebeu foco:", event.widget.get())
-    
-    def entry_focus_out(self, event):
-        print("Entry perdeu foco:", event.widget.get())
-    
-    def entry_key(self, event):
-        print("Tecla pressionada no Entry:", event.char)
-
-app = MyForm()
-app.mainloop()
