@@ -1,18 +1,5 @@
 import requests
 
-# Percentagem (0 a 100) indicando a cobertura de nuvens
-# Graus Celsius (°C) indicando a temperatura
-# Percentagem (0 a 100) indicando a umidade relativa do ar
-# Milímetros (mm) de precipitação acumulada
-# Milímetros por hora (mm/h) indicando a intensidade da chuva
-# Milímetros por hora (mm/h) indicando a intensidade da neve
-# Graus Celsius (°C) indicando a temperatura aparente
-# Índice que mede a intensidade da radiação ultravioleta
-# Quilômetros (km) indicando a visibilidade horizontal
-# Código numérico indicando as condições climáticas
-# Metros por segundo (m/s) indicando a rajada de vento
-# Metros por segundo (m/s) indicando 
-
 class Tempo:
     def __init__(self, cidade: str = None):
         self.__key = 'gBop4PfpX6iJYGXgUdqWSM8Rtr9tdwy6'
@@ -205,28 +192,31 @@ class Tempo:
         headers = {"accept": "application/json"}
         self.resposta = requests.get(url, headers=headers)
         if self.resposta.status_code == 200:
-            json = self.resposta.json()
-            dados = json["data"]
-            self.data_hora = dados["time"]
-            valores = dados["values"]
-            self.nublado = valores["cloudCover"]
-            self.temperatura = valores["temperature"]
-            self.umidade = valores["humidity"]
-            self.precipitacao = valores["precipitationProbability"]
-            self.intensidade_chuva = valores["rainIntensity"]
-            self.intensidade_neve = valores["snowIntensity"]
-            self.temperatura = valores["temperature"]
-            self.temperatura_aparente = valores["temperatureApparent"]
-            self.indice_uv = valores["uvIndex"]
-            self.visibilidade = valores["visibility"]
-            self.condicao = valores["weatherCode"]
-            self.rajada_vento = valores["windGust"]
-            self.velocidade_vento = valores["windSpeed"]           
+            self.__preencher_campos()
         else:
             print('Erro ao consultar o tempo')
             print(self.resposta.status_code)
             print(self.resposta.text)
         return self
+
+    def __preencher_campos(self):
+        json = self.resposta.json()
+        dados = json["data"]
+        self.data_hora = dados["time"]
+        valores = dados["values"]
+        self.nublado = valores["cloudCover"]
+        self.temperatura = valores["temperature"]
+        self.umidade = valores["humidity"]
+        self.precipitacao = valores["precipitationProbability"]
+        self.intensidade_chuva = valores["rainIntensity"]
+        self.intensidade_neve = valores["snowIntensity"]
+        self.temperatura = valores["temperature"]
+        self.temperatura_aparente = valores["temperatureApparent"]
+        self.indice_uv = valores["uvIndex"]
+        self.visibilidade = valores["visibility"]
+        self.condicao = valores["weatherCode"]
+        self.rajada_vento = valores["windGust"]
+        self.velocidade_vento = valores["windSpeed"] 
 
     def mostrar(self):
         print('Cidade: {}'.format(self.__cidade))

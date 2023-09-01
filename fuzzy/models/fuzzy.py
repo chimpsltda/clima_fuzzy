@@ -16,7 +16,6 @@ class NumEscolhas(Enum):
     SEGURANCA_VIARIA = 6
     ATIVIDADES_AGRICOLAS = 7
 
-# Cria as variáveis do problema
 class FuzzyBase:
     def __init__(self, cidade: str):
         self.tempo = cidade
