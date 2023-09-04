@@ -24,22 +24,21 @@ class TForm(Tk):
             '<Button-1>': 'on_click',
             '<Button-2>': 'on_mousewheel_click',
             '<Button-3>': 'on_left_click',
-            '<Destroy>': 'on_close',
             '<Configure>': 'on_resize',
             '<Double-Button-1>': 'on_double_click',    
             '<Enter>': 'on_enter',
             '<Escape>': 'on_escape_press', 
-            '<Expose>': 'on_create',
+            '<Expose>': 'on_show',
             '<FocusIn>': 'on_focus',
             '<FocusOut>': 'on_leave_focus',
             '<Key>': 'on_key_press',
             '<KeyRelease>': 'on_key_release',
             '<Leave>': 'on_exit',
-            '<Map>': 'on_show',
             '<Return>': 'on_enter_press',        
             '<Tab>': 'on_tab_press',
             '<Unmap>': 'on_hide'
         }
+        self.after_idle(self.on_create)
         for event, method_name in events_to_methods.items():
             self.bind(event, self.__create_event_handler(method_name))
 
@@ -53,7 +52,7 @@ class TForm(Tk):
                 else:
                     method()
         return handler
-
+    
     def __centralize(self):
         """"'Private method.: Centraliza a janela na tela."""
         screen_width = self.winfo_screenwidth()
@@ -78,7 +77,7 @@ class TForm(Tk):
 
     def on_close(self):
         """Evento disparado quando a janela é fechada, use override para implementar."""
-        pass
+        self.destroy()
 
     def on_create(self, event):
         """Evento disparado quando a janela é criada, use override com super() para implementar."""
@@ -549,8 +548,8 @@ class TMenu(Menu):
     def add_lista(self, label: str, labels: list, commands: list):
         """Adiciona uma lista de opções ao menu."""
         opcoes = tk.Menu(self,  tearoff=0)
-        for posicao, label in enumerate(labels):
-            opcoes.add_command(label=label, command=commands[posicao])
+        for posicao, texto in enumerate(labels):
+            opcoes.add_command(label=texto, command=commands[posicao])
         self.add_sub_menu(label, opcoes)
 
     def _show_context_menu(self, event):
@@ -693,11 +692,74 @@ class TLabeledEntry(Frame):
     def on_key(self, event):
         pass
 
-root = TForm('teste', 200, 200)
+class TestForm(TForm):
+    def __init__(self):
+        super().__init__(titulo="Test Form", largura=300, altura=200)
+        self.my_button = TButton(self, text="Click Me!", callback_prefix="btn")
+        self.context = TMenu(self, True)
+        self.context.add_lista('teste', labels=['a', 'b', 'c', 'd'], commands=[self.metodo1, self.metodo2, self.metodo3, self.metodo4])
+        self.my_button.pack(pady=50)
+        self.config(menu=self.context)
 
-menubar = TMenu(root)
+    def metodo1(self):
+        print('a')
 
-menubar.add_lista('File', ['Open', 'Save', 'Exit'], [print("Open clicked"), print("Save clicked"), root.quit()])
+    def metodo2(self):
+        print('b')
 
-root.config(menu=menubar)
-root.mainloop()
+    def metodo3(self):
+        print('c')
+
+    def metodo4(self):
+        print('d')
+
+    def on_create(self, event = None):
+        print('criado!')
+        return super().on_create(event=event)
+
+    def on_show(self, event):
+        print('exibido!')
+        super().on_show(event)
+
+    def on_close(self):
+        print('tela fechada')
+        return super().on_close()
+
+    def btn_on_click(self):
+        print('clicado!')
+
+    def btn_on_backspace_press(self):
+        print("BackSpace Apertado!")
+
+    def btn_on_double_click(self):
+        print("Clique duplo")
+
+    def btn_on_enter(self):
+        print("Mouse entrou no botão")
+
+    def btn_on_exit(self):
+        print("Mouse saiu no botão")
+    
+    def btn_on_focus(self):
+        print('botão focado')
+
+    def btn_on_unfocus(self):
+        print('botão desfocado') 
+
+    def btn_on_drag(self):
+        print('botão segurado')  
+
+    def btn_on_drop(self):
+        print('botão solto')
+
+    def btn_on_left_click(self):
+        print('botão direito clicado!')
+
+    def btn_on_mousewheel_click(self):
+        print('scroll apertado!')
+
+    def btn_on_key_press(self):
+        print('tecla apertada') 
+
+teste = TestForm()
+teste.mainloop()
