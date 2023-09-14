@@ -1,24 +1,34 @@
 import requests
+from connection.api import _KEY
 
 class Tempo:
     def __init__(self, cidade: str = None):
-        self.__key = 'gBop4PfpX6iJYGXgUdqWSM8Rtr9tdwy6'
         self.cidade = cidade
 
-    @property
-    def cidade(self):
-        return self.__cidade
-    
     @cidade.setter
     def cidade(self, cidade: str):
         if cidade is not None:
             self.__cidade = cidade
-            self.__consultar()
+        else:
+            self.__get_location()
+            self.__cidade = self.__longitude + ',' + self.__latitude
+        self.__consultar()
 
     @cidade.getter
     def cidade(self):
         return self.__cidade
     
+    @property
+    def resposta(self):
+        return self.__resposta
+
+    def __get_location(self):
+        ip_info = requests.get("https://ipinfo.io")
+        data = ip_info.json()
+        location = data.get("loc").split(",")
+        self.__latitude = location[0]
+        self.__longitude = location[1]
+
     @property
     def resposta(self):
         return self.__resposta
@@ -188,7 +198,7 @@ class Tempo:
         return self.__velocidade_vento
 
     def __consultar(self):
-        url = "https://api.tomorrow.io/v4/weather/realtime?location={}&apikey={}".format(self.__cidade, self.__key)
+        url = "https://api.tomorrow.io/v4/weather/realtime?location={self.__cidade}&apikey={_KEY}"
         headers = {"accept": "application/json"}
         self.resposta = requests.get(url, headers=headers)
         if self.resposta.status_code == 200:
@@ -218,19 +228,3 @@ class Tempo:
         self.rajada_vento = valores["windGust"]
         self.velocidade_vento = valores["windSpeed"] 
 
-    def mostrar(self):
-        print('Cidade: {}'.format(self.__cidade))
-        print('Data e hora: {}'.format(self.__data_hora))
-        print('Nublado: {}'.format(self.__nublado))
-        print('Temperatura: {}'.format(self.__temperatura))
-        print('Umidade: {}'.format(self.__umidade))
-        print('Precipitação: {}'.format(self.__precipitacao))
-        print('Intensidade da chuva: {}'.format(self.__intensidade_chuva))
-        print('Intensidade da neve: {}'.format(self.__intensidade_neve))
-        print('Temperatura aparente: {}'.format(self.__temperatura_aparente))
-        print('Índice UV: {}'.format(self.__indice_uv))
-        print('Visibilidade: {}'.format(self.__visibilidade))
-        print('Condição: {}'.format(self.__condicao))
-        print('Rajada de vento: {}'.format(self.__rajada_vento))
-        print('Velocidade do vento: {}'.format(self.__velocidade_vento))
-        return self
