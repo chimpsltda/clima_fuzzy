@@ -1,8 +1,5 @@
 import numpy as np
-import sys
 import matplotlib.pyplot as plt
-sys.path.append('scikit-fuzzy-master')
-import skfuzzy as fuzz
 from skfuzzy import control as ctrl
 
 class Fuzzy_Entradas:

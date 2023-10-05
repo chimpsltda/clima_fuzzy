@@ -1,0 +1,7 @@
+{
+    "python.analysis.extraPaths": [
+        "./utils",
+        "./enums",
+        "./model/connection"
+    ]
+}

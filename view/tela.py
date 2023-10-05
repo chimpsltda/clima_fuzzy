@@ -13,24 +13,30 @@ from perguntas import NumEscolhas
 
 class TelaConfig(TForm):
     def __init__(self):
-        super().__init__('Lógica Fuzzy', 550, 550, icone='icons/logo.png')
+        super().__init__('Lógica Fuzzy', 550, 550, icone='icons/logo_original.png')
 
     def on_create(self):
-        self.mmuEntradas = TMenu(self)
-        self.mmuSaidas = TMenu(self)
-        self.mmuResultado = TMenu(self)
-        self.config(menu=self.mmuEntradas)
+        self.mmuItems = TMenu(self)
+        self.mmuEntradas = TMenu(self.mmuItems)
+        self.mmuSaidas = TMenu(self.mmuItems)
+        self.mmuResultado = TMenu(self.mmuItems)
+        self.mmuItems.add_cascade(label='Entradas', menu=self.mmuEntradas)
+        self.mmuItems.add_cascade(label='Saídas', menu=self.mmuSaidas)
+        self.mmuItems.add_cascade(label='Resultado', menu=self.mmuResultado)
+        self.config(menu=self.mmuItems)
         self.lblPergunta = tk.Label(self, text='Pergunta')
         self.cbxPergunta = TComboBox(self, callback_prefix='cbxPergunta', width=55)
         self.lbeCidade = TLabeledEntry(self, callback_prefix='lbeCidade', 
                                        label_alignment=Align_Text.LEFT, 
                                        label_text='Informe a Localização')
+        self.btnPerguntar = TButton(self, text='Perguntar', callback_prefix='btnPerguntar')
         self.__populate()
 
     def on_show(self):
         self.lblPergunta.place(x=20, y=20)
         self.cbxPergunta.place(x=20, y=42)
         self.lbeCidade.place(x=20, y=70)
+        self.btnPerguntar.place(x=210, y=90)
 
     def __populate(self):
         self.cbxPergunta['values'] = NumEscolhas.values()
@@ -46,6 +52,14 @@ class TelaConfig(TForm):
              self.mmuVisualizarTemperaturaAparente_on_click, self.mmuVisualizarIntensidadeUV_on_click,
              self.mmuVisualizarVisibilidade_on_click, self.mmuVisualizarCondicoesClimaticas_on_click,
              self.mmuVisualizarRajadaVento_on_click, self.mmuVisualizarVelocidadeVento_on_click])
+        self.mmuSaidas.add_lista('Visualizar Saídas',
+            ['Visualizar Vestuário', 'Visualizar Atividades Externas', 'Visualizar Previsão Chuva',
+             'Visualizar Avaliação Conforto', 'Visualizar Eficiência Energética', 'Visualizar Segurança Viária',
+             'Visualizar Atividades Agrícolas'],
+            [self.mmuVisualizarVestuario_on_click, self.mmuVisualizarAtividadesExternas_on_click,
+             self.mmuVisualizarPrevisaoChuva_on_click, self.mmuVisualizarAvaliacaoConforto_on_click,
+             self.mmuVisualizarEficienciaEnergetica_on_click, self.mmuVisualizarSegurancaViaria_on_click,
+             self.mmuVisualizarAtividadesAgricolas_on_click])
         return self
 
     def mmuVisualizarNublado_on_click(self):
@@ -83,6 +97,39 @@ class TelaConfig(TForm):
         pass
     
     def mmuVisualizarVelocidadeVento_on_click(self):
+        pass
+
+    def mmuVisualizarVestuario_on_click(self):
+        pass
+    
+    def mmuVisualizarAtividadesExternas_on_click(self):
+        pass
+    
+    def mmuVisualizarPrevisaoChuva_on_click(self):
+        pass
+    
+    def mmuVisualizarAvaliacaoConforto_on_click(self):
+        pass
+    
+    def mmuVisualizarEficienciaEnergetica_on_click(self):
+        pass
+    
+    def mmuVisualizarSegurancaViaria_on_click(self):
+        pass
+    
+    def mmuVisualizarAtividadesAgricolas_on_click(self):
+        pass
+    
+    def cbxPergunta_on_change(self):
+        pass
+    
+    def lbeCidade_on_change(self):
+        pass
+    
+    def lbeCidade_on_click(self):
+        pass
+    
+    def btnPerguntar_on_click(self):
         pass
 
 TelaConfig().mainloop()

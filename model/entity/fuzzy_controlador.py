@@ -1,9 +1,3 @@
-import numpy as np
-import sys
-import matplotlib.pyplot as plt
-import meteorologia as met
-sys.path.append('scikit-fuzzy-master')
-import skfuzzy as fuzz
 from skfuzzy import control as ctrl
 from fuzzy_entradas import Fuzzy_Entradas
 from fuzzy_saidas import Fuzzy_Saidas

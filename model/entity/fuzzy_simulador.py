@@ -1,10 +1,8 @@
-import numpy as np
-import sys
-import matplotlib.pyplot as plt
-import meteorologia as met
-sys.path.append('scikit-fuzzy-master')
-import skfuzzy as fuzz
 from skfuzzy import control as ctrl
+import sys
+sys.path.append('model/connection')
+sys.path.append('model/entity')
+import meteorologia as met
 from fuzzy_controlador import Fuzzy_Controlador
 from enums.perguntas import NumEscolhas
 

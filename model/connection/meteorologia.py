@@ -1,33 +1,13 @@
+from api import _KEY
 import requests
-from connection.api import _KEY
 
 class Tempo:
-    def __init__(self, cidade: str = None):
-        self.cidade = cidade
-
-    @cidade.setter
-    def cidade(self, cidade: str):
-        if cidade is not None:
-            self.__cidade = cidade
-        else:
-            self.__get_location()
-            self.__cidade = self.__longitude + ',' + self.__latitude
-        self.__consultar()
-
-    @cidade.getter
-    def cidade(self):
-        return self.__cidade
-    
+    def __init__(self):
+        pass
+        
     @property
     def resposta(self):
         return self.__resposta
-
-    def __get_location(self):
-        ip_info = requests.get("https://ipinfo.io")
-        data = ip_info.json()
-        location = data.get("loc").split(",")
-        self.__latitude = location[0]
-        self.__longitude = location[1]
 
     @property
     def resposta(self):
@@ -197,8 +177,8 @@ class Tempo:
     def velocidade_vento(self):
         return self.__velocidade_vento
 
-    def __consultar(self):
-        url = "https://api.tomorrow.io/v4/weather/realtime?location={self.__cidade}&apikey={_KEY}"
+    def consultar(self, cidade: str = None):
+        url = "https://api.tomorrow.io/v4/weather/realtime?location={cidade}&apikey={_KEY}"
         headers = {"accept": "application/json"}
         self.resposta = requests.get(url, headers=headers)
         if self.resposta.status_code == 200:
