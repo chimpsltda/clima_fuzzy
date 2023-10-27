@@ -22,7 +22,7 @@ Ryan Henrique Nantes - `Implementação da API e estruturação dos módulos.`
 A lógica difusa é uma técnica de processamento de linguagem natural que permite o tratamento de informações com granularidade variável, permitindo assim, a interpretação correta das palavras-chave presentes na entrada.
 O projeto tem como objetivo a implementação da lógica difusa em um sistema de previsão do tempo, através de um algoritmo que utilize essa abordagem para realizar as previsões climáticas e sugestões quanto a decisões cotidianas relativas ao clima.
 
-## Requitos
+## Requisitos
 - Ubuntu 22.04 ou Windows 10
 - [Python 3.11.6](https://www.python.org/downloads/release/python-3116/)
 - Bibliotecas:
