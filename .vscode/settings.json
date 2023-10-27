@@ -1,7 +1,6 @@
 {
     "python.analysis.extraPaths": [
-        "./utils",
-        "./enums",
-        "./model/connection"
+        "./fuzzy",
+        "./api.py"
     ]
 }
