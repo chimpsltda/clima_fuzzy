@@ -25,7 +25,7 @@ O projeto tem como objetivo a implementação da lógica difusa em um sistema de
 ## Requisitos
 - Ubuntu 22.04 ou Windows 10
 - Conda
-- [Python 3.11.6](https://www.python.org/downloads/release/python-3116/)
+- [Python 3.11.4](https://www.python.org/downloads/release/python-3114/)
 - Bibliotecas:
     - [scikit-fuzzy 0.4.2](https://pypi.org/project/scikit-fuzzy/0.4.2/)
     - [numpy 1.24.3](https://pypi.org/project/numpy/1.24.3/)
