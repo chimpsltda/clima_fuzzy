@@ -11,8 +11,11 @@
 
 ## Autores e Distribuição de Tarefas
 Bruno Machado Ferreira `Troubleshooting e Documentação do projeto`
+
 Ernani Mendes Da Fonseca Neto - `Pesquisa sobre Lógica Fuzzy e aplicações no projeto`
+
 Fábio Gomes De Sousa - `Tratamento dos dados de localização do usuário`
+
 Ryan Henrique Nantes - `Implementação da API e estruturação dos módulos.`
 
 ## Introdução
