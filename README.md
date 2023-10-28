@@ -66,6 +66,8 @@ As opções para visualizar as entradas e saídas servem apenas para visualizar 
 
 Ao escolher uma das perguntas pós-consulta, o programa usará os dados da API para alimentar um gráfico e responder sua pergunta com uma sugestão em texto no terminal. A linha preta no gráfico é a região com menos incerteza, usada para determinar a resposta.
 
+Nas perguntas pós-consulta, digitar um número que não esteja na lista de opções encerrará o programa.
+
 
 ### Referências
 - [Weather API em Tomorrow IO](https://www.tomorrow.io/weather-api/)
