@@ -35,6 +35,7 @@ O projeto tem como objetivo a implementação da lógica difusa em um sistema de
 
 ## Implementação
 Para implementar o consultor de clima, optamos por modularização para maior organização e consistência. Usamos também a API de previsão do tempo fornecida pelo site Tomorrow IO com entradas e saídas específicas para facilitar a leitura dos dados.
+A versão presente neste repositório contém uma chave de acesso a API que pertence a um dos membros do grupo. Por favor, crie e use sua própria chave de acesso se caso esteja trabalhando com partes deste código.
 
 ### Main
 Este módulo serve como o "front-end", recebendo a cidade que o usuário quer pesquisar e mantendo os menus de perguntas pós-consulta.
