@@ -1,7 +1,7 @@
 # Consultor de previsão do tempo
 - Projeto de Inteligência Artificial 
 - Implementação de Lógica Difusa(Fuzzy) e API para consulta de previsão do tempo
-- [Vídeo demonstrando o funcionamento](https://youtu.be/kC4bEZujzjg)
+- ![Vídeo demonstrando o funcionamento](https://youtu.be/kC4bEZujzjg)
 
 ## Índice
 - [Introdução](#introdução)
